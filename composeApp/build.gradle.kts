@@ -47,6 +47,7 @@ kotlin {
         }
         commonMain.dependencies {
             val voyagerVersion = "1.1.0-beta02"
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")//Iconos Material 3
             implementation("cafe.adriel.voyager:voyager-navigator:${voyagerVersion}")//Navegacion entre ventanas
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

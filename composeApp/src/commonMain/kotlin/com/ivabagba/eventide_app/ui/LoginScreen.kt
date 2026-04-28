@@ -1,23 +1,36 @@
 package com.ivabagba.eventide_app.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -33,23 +46,41 @@ class LoginScreen : Screen{
         //Valores variables del viewModel para que la interfaz cambie en tiempo real
         val viewModel = remember { LoginViewModel() }
 
+        //variables de estado
+        var showPassword by remember { mutableStateOf(false) }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(32.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Card(
                 modifier = Modifier
                 .widthIn(max = 420.dp)
                 .fillMaxWidth()
-                    .heightIn(max = 600.dp),
-                elevation = CardDefaults.cardElevation(8.dp)
+                .heightIn(max = 600.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                elevation = CardDefaults.cardElevation(12.dp)
             ) {
-                Column(modifier = Modifier.padding(24.dp),verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .padding(28.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = "Iniciar Sesión",
-                        style = MaterialTheme.typography.headlineMedium,
+                        text = "Eventide",
+                        style = MaterialTheme.typography.headlineLarge,
+                    )
+                    Text(
+                        text = "Accede a tu cuenta para ver los eventos",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
                     OutlinedTextField(
@@ -65,6 +96,25 @@ class LoginScreen : Screen{
                         onValueChange = { viewModel.password = it },
                         label = { Text("Contraseña") },
                         singleLine = true,
+
+                        //funcion mostrar contraseña
+                        visualTransformation = if(showPassword) {
+                            VisualTransformation.None
+                        } else {
+                            PasswordVisualTransformation()
+                        },
+
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }) {
+                                Icon(
+                                    imageVector = if (showPassword)
+                                        Icons.Default.Visibility
+                                    else
+                                        Icons.Default.VisibilityOff,
+                                    contentDescription = "Mostrar contraseña"
+                                )
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -73,11 +123,16 @@ class LoginScreen : Screen{
                             if (viewModel.onLogin()) {
                                 navigator?.push(EventMainScreen())
                             }
-                    }) {
-                        Text("Log in")
+                        },
+                        modifier = Modifier
+                        .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(14.dp),
+                    ) {
+                        Text("Iniciar Sesión")
                     }
                 }
-                }
+            }
         }
     }
 }
