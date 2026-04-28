@@ -1,4 +1,4 @@
-package com.ivabagba.eventide_app
+package com.ivabagba.eventide_app.ui
 
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen

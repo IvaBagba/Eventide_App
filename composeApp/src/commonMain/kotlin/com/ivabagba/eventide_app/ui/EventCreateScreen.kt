@@ -1,9 +1,9 @@
-package com.ivabagba.eventide_app
+package com.ivabagba.eventide_app.ui
 
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
 
-class EventDetailScreen : Screen {
+class EventCreateScreen : Screen{
     @Composable
     override fun Content() {
         TODO("Not yet implemented")

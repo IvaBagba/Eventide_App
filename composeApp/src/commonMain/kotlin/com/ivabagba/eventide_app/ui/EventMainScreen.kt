@@ -1,4 +1,4 @@
-package com.ivabagba.eventide_app
+package com.ivabagba.eventide_app.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
