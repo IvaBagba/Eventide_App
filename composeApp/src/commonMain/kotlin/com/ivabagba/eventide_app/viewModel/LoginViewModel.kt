@@ -18,6 +18,6 @@ class LoginViewModel {
     }
 
     fun onLogin(): Boolean {
-        return user.isNotBlank() && password.isNotBlank()
+        return user == "admin" && password == "1234"
     }
 }
