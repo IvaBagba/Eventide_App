@@ -43,9 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.ivabagba.eventide_app.viewModel.LoginViewModel
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
+import com.ivabagba.eventide_app.viewModel.LoginVm
 
 class LoginScreen : Screen {
 
@@ -54,7 +52,7 @@ class LoginScreen : Screen {
     override fun Content() {
         val navigator = LocalNavigator.current
         //Valores variables del viewModel para que la interfaz cambie en tiempo real
-        val viewModel = remember { LoginViewModel() }
+        val viewModel = remember { LoginVm() }
 
         //variables de estado
         var showPassword by remember { mutableStateOf(false) }
