@@ -79,12 +79,17 @@ class EventMainScreen : Screen {
                         shape = MaterialTheme.shapes.large,
                         color = MaterialTheme.colorScheme.surface,
                     ){
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(12.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
+                        IconButton(onClick = {
+                            navigator?.pop()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+
                     }
                 }
                 HorizontalDivider(

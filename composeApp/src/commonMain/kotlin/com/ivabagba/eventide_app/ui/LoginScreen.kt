@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -114,7 +115,7 @@ class LoginScreen : Screen {
                             value = viewModel.user,
                             onValueChange = { viewModel.user = it },
                             label = { Text("Usuario") },
-                            singleLine = true,
+
                             modifier = Modifier.fillMaxWidth()
                         )
 
