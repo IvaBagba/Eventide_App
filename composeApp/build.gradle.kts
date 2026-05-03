@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlinSerialization) //Serializacion , consultar gradle/libs
 }
 
 kotlin {
@@ -44,11 +45,16 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation("io.ktor:ktor-client-okhttp:3.4.3")//Cliente http android extension de ktor
         }
         commonMain.dependencies {
             val voyagerVersion = "1.1.0-beta02"
+            implementation("io.ktor:ktor-client-core:3.4.3") //Cliente http
+            implementation("io.ktor:ktor-client-content-negotiation:3.4.3")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.3")// Serializacion json
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")//Iconos Material 3
             implementation("cafe.adriel.voyager:voyager-navigator:${voyagerVersion}")//Navegacion entre ventanas
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -64,6 +70,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation("io.ktor:ktor-client-cio:3.4.3") // cliente http escritorio extension de ktor
         }
     }
 }

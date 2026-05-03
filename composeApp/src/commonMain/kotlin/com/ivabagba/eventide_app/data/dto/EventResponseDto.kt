@@ -7,10 +7,10 @@ import kotlinx.serialization.Serializable
 data class EventResponseDto(
     val id: Long,
     val eventName: String,
-    val eventDesc: String,
+    val eventDesc: String? = null,
     val eventDate: String,
     val eventTime: String,
     val eventLocation: String,
     val eventStatus: String,
-    val eventTags: String,
+    val cursosTags: List<String> = emptyList(),
 )
