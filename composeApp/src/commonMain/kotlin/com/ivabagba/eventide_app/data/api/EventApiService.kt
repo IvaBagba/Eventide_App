@@ -10,6 +10,6 @@ class EventApiService (
 ) {
     //Suspend permite a la funcion estar pausada mientras se espera la respuesta del cliente HTTP
     suspend fun getEvents(): List<EventResponseDto>{
-        return client.get("http://localhost:8081/eventide/events").body<List<EventResponseDto>>()
+        return client.get("http://192.168.0.20:8081/eventide/events").body<List<EventResponseDto>>()
     }
 }
