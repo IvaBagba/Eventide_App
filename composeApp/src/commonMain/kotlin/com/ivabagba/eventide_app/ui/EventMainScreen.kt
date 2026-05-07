@@ -26,11 +26,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -88,6 +91,20 @@ class EventMainScreen : Screen {
 
         Scaffold (
             containerColor = MaterialTheme.colorScheme.background,
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        navigator?.push(EventCreateScreen())
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Crear Evento"
+                    )
+                }
+            }
         ) { paddingValues ->
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -165,7 +182,7 @@ class EventMainScreen : Screen {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-
+                    //Aquí se muestra el estado del listado de eventos, es decir el estado de carga , error o en su defecto el listado con los eventos
                     when {
                         viewModel.isLoading -> {
                             Box(
@@ -259,10 +276,10 @@ class EventMainScreen : Screen {
                     )
 
 
-                        Text(
-                            text = event.eventDesc ?: "Sin descripcion",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Text(
+                        text = event.eventDesc ?: "Sin descripcion",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
 
                     HorizontalDivider()
@@ -301,6 +318,7 @@ class EventMainScreen : Screen {
             }
         }
     }
+
 
     @Composable
     fun EventCard(event: EventResponseDto,
