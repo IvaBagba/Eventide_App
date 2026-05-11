@@ -9,6 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 class EventCreationVm(
     private val eventApiService: EventApiService
@@ -43,6 +45,8 @@ class EventCreationVm(
     private val corrutine = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     fun createEvent() {
+        if (!validateFields()) return
+
         corrutine.launch {
             isSaving = true
             errorMessage = null
@@ -97,5 +101,58 @@ class EventCreationVm(
         } finally {
             isLoadingData = false
         }
+    }
+
+    var formError by mutableStateOf<String?>(null)
+    private set
+
+    private fun validateFields(): Boolean {
+        formError = null
+
+        if (eventName.isBlank()){
+            formError = "El nombre del evento no puede estar vacio"
+            return false
+        }
+
+        if (eventDate.isBlank()){
+            formError = "La fecha no puede estar vacia"
+            return false
+        }
+
+        try {
+            LocalDate.parse(eventDate)
+        } catch (e:Exception) {
+            formError = "El formato es invalido, usa (YYYY-MM-DD)"
+            return false
+        }
+
+        if (eventTime.isBlank()){
+            formError = "La hora no puede estar vacia"
+            return false
+        }
+
+        try {
+            LocalTime.parse(eventTime)
+        } catch (e:Exception) {
+            formError = "El formato es invalido, usa (HH:mm:ss)"
+            return false
+        }
+
+        if (eventLocation.isBlank()){
+            formError = "La Ubicación no puede estar vacia"
+            return false
+        }
+
+        if (eventStatus.isBlank()){
+            formError = "No hay estado Seleccionado"
+            return false
+        }
+
+        if (cursosTags.isNullOrEmpty()){
+            formError = "No hay Tags Establecidas"
+            return false
+        }
+
+        return true
     }
 }

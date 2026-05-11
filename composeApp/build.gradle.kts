@@ -55,6 +55,7 @@ kotlin {
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")//Iconos Material 3
             implementation("cafe.adriel.voyager:voyager-navigator:${voyagerVersion}")//Navegacion entre ventanas
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)

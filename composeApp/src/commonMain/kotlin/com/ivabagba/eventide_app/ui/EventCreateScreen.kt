@@ -248,6 +248,22 @@ class EventCreateScreen : Screen{
 
                 }
 
+                viewModel.errorMessage?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                viewModel.formError?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
                 Row (
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -274,6 +290,8 @@ class EventCreateScreen : Screen{
                         }
                     }
                 }
+                
+
             }
         }
     }

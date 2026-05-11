@@ -44,4 +44,35 @@ class EventMainVm (
         }
 
     }
+
+    //Bloque eliminación de evento
+    //Desactiva el boton borrar para evitar multiples llamadas a la api
+    var isDeleting by mutableStateOf(false)
+    private set
+    //Muestra el mensaje de error al borrar un evento en caso de que falle
+    var deleterError by mutableStateOf<String?>(null)
+    private set
+
+    fun deleteEvent(id: Long, onSuccess: () -> Unit) {
+        corrutine.launch {
+            try {
+                isDeleting = true
+                deleterError = null
+
+                //Llamada a la api para borrar el evento
+                eventApiService.deleteEvent(id)
+
+                //Recargar lista post borrado
+                loadEvents()
+
+                onSuccess()
+            } catch (e: Exception) {
+                deleterError = e.message ?: "Ha ocurrido un error al eliminar el evento"
+            } finally {
+                isDeleting = false
+            }
+
+
+        }
+    }
 }

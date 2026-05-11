@@ -25,10 +25,14 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,6 +42,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,6 +63,7 @@ import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.dto.EventResponseDto
 import com.ivabagba.eventide_app.viewModel.EventMainVm
+import io.ktor.websocket.Frame
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -76,6 +82,8 @@ class EventMainScreen : Screen {
         var selectEvent by remember { mutableStateOf<EventResponseDto?>(null) }
         //Variable que nos dice si mostramos el detalle del evento
         var showEventDetail by remember { mutableStateOf(false) }
+
+        var showDeleteConfirmation by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             viewModel.loadEvents()
@@ -153,21 +161,6 @@ class EventMainScreen : Screen {
 
                     }
 
-                    AnimatedVisibility(
-                        visible = showEventDetail,
-                        enter = fadeIn(animationSpec = tween(220)) + scaleIn(animationSpec = tween(220), initialScale = 0.96f),
-                        exit = fadeOut(animationSpec = tween(180)) + scaleOut(animationSpec = tween(180), targetScale = 0.96f),
-                    ) {
-                        //Apertura del overlay del evento en detalle
-                        selectEvent?.let { event ->
-                            EventDetailScreen(
-                                event = event,
-                                onDismiss = { showEventDetail = false }
-                            )
-                        }
-                    }
-
-
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 16.dp),
                     )
@@ -230,9 +223,86 @@ class EventMainScreen : Screen {
                             }
                         }
                     }
-
-
                 }
+
+                AnimatedVisibility(
+                    visible = showEventDetail,
+                    enter = fadeIn(animationSpec = tween(220)) + scaleIn(animationSpec = tween(220), initialScale = 0.96f),
+                    exit = fadeOut(animationSpec = tween(180)) + scaleOut(animationSpec = tween(180), targetScale = 0.96f),
+                ) {
+                    //Apertura del overlay del evento en detalle
+                    selectEvent?.let { event ->
+                        EventDetailScreen(
+                            event = event,
+                            isDeleting = viewModel.isDeleting,
+                            deleteError = viewModel.deleterError,
+                            onDismiss = {
+                                if (!viewModel.isDeleting) {
+                                    showEventDetail = false
+                                }
+
+                            },
+                            onDeleteClick = {
+                                showDeleteConfirmation = true
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (showDeleteConfirmation && selectEvent != null) {
+                AlertDialog(
+                    onDismissRequest = {
+                        if (viewModel.isDeleting) {
+                            showDeleteConfirmation = false
+                        }
+                    },
+                    title = {
+                        Text(text = "Eliminar Evento")
+                    },
+                    text = {
+                        Text(text = "Seguro que quieres eliminar este evento?")
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                selectEvent?.id?.let { id ->
+                                    viewModel.deleteEvent(
+                                        id,
+                                        onSuccess = {
+                                            showEventDetail = false
+                                            showDeleteConfirmation = false
+                                            selectEvent = null
+                                        }
+                                    )
+                                }
+                            },
+                            enabled = !viewModel.isDeleting,
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.onError,
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(
+                                if (viewModel.isDeleting) {
+                                    "Eliminando evento...."
+                                } else {
+                                    "Eliminar"
+                                }
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        OutlinedButton(
+                            onClick = {
+                                showDeleteConfirmation = false
+                            },
+                            enabled = !viewModel.isDeleting,
+                        ) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
             }
 
         }
@@ -241,7 +311,7 @@ class EventMainScreen : Screen {
 
     //Vista de evento en detalle (Solo uno y toda la pantalla)
     @Composable
-    fun EventDetailScreen(event: EventResponseDto, onDismiss: () -> Unit) {
+    fun EventDetailScreen(event: EventResponseDto, onDismiss: () -> Unit, onDeleteClick: () -> Unit, isDeleting: Boolean, deleteError: String?) {
         Box(modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -267,7 +337,12 @@ class EventMainScreen : Screen {
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+
                 ) {
                     Text(
                         text = event.eventName,
@@ -308,12 +383,41 @@ class EventMainScreen : Screen {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text(text = "Cerrar")
+                    deleteError?.let {error ->
+                        Text(
+                            text = error,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                        )
                     }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                            OutlinedButton(
+                            onClick = onDismiss,
+                            enabled = !isDeleting,
+                        ) {
+                            Text(text = "Cerrar")
+                        }
+
+                        Spacer(modifier = Modifier.size(12.dp))
+                        Button(
+                            onClick = onDeleteClick,
+                            enabled = !isDeleting,
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.onError,
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(text = "Eliminar")
+                        }
+                    }
+
                 }
             }
         }
