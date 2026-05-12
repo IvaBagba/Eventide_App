@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -36,7 +35,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -63,7 +61,6 @@ import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.dto.EventResponseDto
 import com.ivabagba.eventide_app.viewModel.EventMainVm
-import io.ktor.websocket.Frame
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -244,6 +241,10 @@ class EventMainScreen : Screen {
                             },
                             onDeleteClick = {
                                 showDeleteConfirmation = true
+                            },
+
+                            onEditClick = {
+                                navigator?.push(EventEditScreen(event))
                             }
                         )
                     }
@@ -311,7 +312,15 @@ class EventMainScreen : Screen {
 
     //Vista de evento en detalle (Solo uno y toda la pantalla)
     @Composable
-    fun EventDetailScreen(event: EventResponseDto, onDismiss: () -> Unit, onDeleteClick: () -> Unit, isDeleting: Boolean, deleteError: String?) {
+    fun EventDetailScreen(
+        event: EventResponseDto,
+        onDismiss: () -> Unit,
+        onDeleteClick: () -> Unit,
+        onEditClick: () -> Unit,
+        isDeleting: Boolean,
+        deleteError: String?,
+
+    ) {
         Box(modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -323,7 +332,7 @@ class EventMainScreen : Screen {
         ){
             Card(
                 modifier = Modifier
-                .fillMaxWidth(0.60f)
+                .fillMaxWidth(0.90f)
                 .fillMaxHeight(0.80f)
                     .pointerInput(Unit) {
                         detectTapGestures {  }
@@ -403,6 +412,14 @@ class EventMainScreen : Screen {
                             enabled = !isDeleting,
                         ) {
                             Text(text = "Cerrar")
+                        }
+
+                        Spacer(modifier = Modifier.size(12.dp))
+                        Button(
+                            onClick = onEditClick,
+                            enabled = !isDeleting,
+                        ) {
+                            Text(text = "Editar")
                         }
 
                         Spacer(modifier = Modifier.size(12.dp))
