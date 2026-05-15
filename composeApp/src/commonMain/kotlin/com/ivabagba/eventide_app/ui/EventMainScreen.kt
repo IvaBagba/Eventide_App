@@ -102,17 +102,19 @@ class EventMainScreen(
         Scaffold (
             containerColor = MaterialTheme.colorScheme.background,
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        navigator?.push(EventCreateScreen())
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Crear Evento"
-                    )
+                if (isAdmin) {
+                    FloatingActionButton(
+                        onClick = {
+                            navigator?.push(EventCreateScreen())
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Crear Evento"
+                        )
+                    }
                 }
             }
         ) { paddingValues ->
@@ -241,6 +243,7 @@ class EventMainScreen(
                     //Apertura del overlay del evento en detalle
                     selectEvent?.let { event ->
                         EventDetailScreen(
+                            isAdmin = isAdmin,
                             event = event,
                             isDeleting = viewModel.isDeleting,
                             deleteError = viewModel.deleterError,
@@ -330,8 +333,9 @@ class EventMainScreen(
         onEditClick: () -> Unit,
         isDeleting: Boolean,
         deleteError: String?,
+        isAdmin: Boolean,
 
-    ) {
+        ) {
         Box(modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -425,27 +429,28 @@ class EventMainScreen(
                             Text(text = "Cerrar")
                         }
 
-                        Spacer(modifier = Modifier.size(12.dp))
-                        Button(
-                            onClick = onEditClick,
-                            enabled = !isDeleting,
-                        ) {
-                            Text(text = "Editar")
-                        }
+                        if (isAdmin) {
+                            Spacer(modifier = Modifier.size(12.dp))
+                            Button(
+                                onClick = onEditClick,
+                                enabled = !isDeleting,
+                            ) {
+                                Text(text = "Editar")
+                            }
 
-                        Spacer(modifier = Modifier.size(12.dp))
-                        Button(
-                            onClick = onDeleteClick,
-                            enabled = !isDeleting,
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = MaterialTheme.colorScheme.onError,
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text(text = "Eliminar")
+                            Spacer(modifier = Modifier.size(12.dp))
+                            Button(
+                                onClick = onDeleteClick,
+                                enabled = !isDeleting,
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = MaterialTheme.colorScheme.onError,
+                                    containerColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Text(text = "Eliminar")
+                            }
                         }
                     }
-
                 }
             }
         }
