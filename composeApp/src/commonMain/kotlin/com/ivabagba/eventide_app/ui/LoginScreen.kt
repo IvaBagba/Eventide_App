@@ -44,6 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.ivabagba.eventide_app.data.api.CreateHttpClient
+import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.viewModel.LoginVm
 
 class LoginScreen : Screen {
@@ -52,8 +54,10 @@ class LoginScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
-        //Valores variables del viewModel para que la interfaz cambie en tiempo real
-        val viewModel = remember { LoginVm() }
+
+        val client = remember { CreateHttpClient() }
+        val api = remember { EventApiService(client) }
+        val viewModel = remember { LoginVm(api) }
 
         //variables de estado
         var showPassword by remember { mutableStateOf(false) }
@@ -112,16 +116,17 @@ class LoginScreen : Screen {
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         OutlinedTextField(
-                            value = viewModel.user,
-                            onValueChange = { viewModel.user = it },
-                            label = { Text("Usuario") },
-
+                            value = viewModel.dni,
+                            onValueChange = { viewModel.dni = it },
+                            label = { Text("DNI") },
+                            singleLine = true,
                             modifier = Modifier.fillMaxWidth()
+
                         )
 
                         OutlinedTextField(
-                            value = viewModel.password,
-                            onValueChange = { viewModel.password = it },
+                            value = viewModel.userPass,
+                            onValueChange = { viewModel.userPass = it },
                             label = { Text("Contraseña") },
                             singleLine = true,
 
@@ -147,16 +152,26 @@ class LoginScreen : Screen {
                         )
                         Button(
                             onClick = {
-                                if (viewModel.onLogin()) {
+                                viewModel.onLogin{
                                     navigator?.push(EventMainScreen())
                                 }
                             },
+                            enabled = !viewModel.isLoading,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp),
                             shape = RoundedCornerShape(14.dp),
                         ) {
-                            Text("Iniciar Sesión")
+                            Text(if (!viewModel.isLoading) "Iniciar Sesión" else "Iniciando Sesión")
+                        }
+
+                        viewModel.errorMessage?.let {
+                            errorMessage ->
+                            Text(
+                                text = errorMessage,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                         }
                     }
 
