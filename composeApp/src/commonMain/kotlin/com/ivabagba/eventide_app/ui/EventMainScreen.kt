@@ -60,14 +60,11 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.dto.EventResponseDto
-import com.ivabagba.eventide_app.data.dto.login.LoginResDto
 import com.ivabagba.eventide_app.viewModel.EventMainVm
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
-class EventMainScreen(
-    private val loggedIn: LoginResDto
-) : Screen {
+class EventMainScreen : Screen {
 
     @Preview
     @Composable
@@ -77,8 +74,6 @@ class EventMainScreen(
         val viewModel = remember { EventMainVm(api) }
 
         val navigator = LocalNavigator.current
-
-        val isAdmin = loggedIn.userRole == "ADMIN"
 
         //Variable que guarda que evento hemos seleccionado para ver su detalle, puede ser nulo
         var selectEvent by remember { mutableStateOf<EventResponseDto?>(null) }
@@ -138,14 +133,8 @@ class EventMainScreen(
                             )
 
                             Text(
-                                text = loggedIn.userName,
+                                text = "Usuario",
                                 style = MaterialTheme.typography.bodySmall,
-                            )
-
-                            Text(
-                                text = loggedIn.userRole,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
                             )
 
                         }

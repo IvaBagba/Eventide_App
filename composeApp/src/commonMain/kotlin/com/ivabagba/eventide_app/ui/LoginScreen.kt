@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -151,8 +152,8 @@ class LoginScreen : Screen {
                         )
                         Button(
                             onClick = {
-                                viewModel.onLogin{ loggedIn ->
-                                    navigator?.push(EventMainScreen(loggedIn))
+                                viewModel.onLogin{
+                                    navigator?.push(EventMainScreen())
                                 }
                             },
                             enabled = !viewModel.isLoading,
