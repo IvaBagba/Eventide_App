@@ -20,7 +20,7 @@ class EventApiService (
     private val client: HttpClient
 ) {
 
-    var serverUrl: String = "http://192.168.0.15:8081"
+    var serverUrl: String = "https://eventideapi-production-162a.up.railway.app"
     //Suspend permite a la funcion estar pausada mientras se espera la respuesta del cliente HTTP
     suspend fun getEvents(): List<EventResponseDto>{
         return client.get("$serverUrl/eventide/events")

@@ -112,8 +112,8 @@ compose.desktop {
         mainClass = "com.ivabagba.eventide_app.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.ivabagba.eventide_app"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
+            packageName = "Eventide"
             packageVersion = "1.0.0"
         }
     }
