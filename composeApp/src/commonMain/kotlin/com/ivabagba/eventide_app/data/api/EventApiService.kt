@@ -20,11 +20,18 @@ class EventApiService (
     private val client: HttpClient
 ) {
 
-    var serverUrl: String = "https://eventideapi-production-162a.up.railway.app"
+    //URL Local Testing
+    val serverUrl: String = "http://localhost:8081"
+    //URL Deployed Api
+    //var serverUrl: String = "https://eventideapi-production-162a.up.railway.app"
     //Suspend permite a la funcion estar pausada mientras se espera la respuesta del cliente HTTP
     suspend fun getEvents(): List<EventResponseDto>{
         return client.get("$serverUrl/eventide/events")
             .body<List<EventResponseDto>>()
+    }
+
+    suspend fun getEventsByUser(userID: Long): List<EventResponseDto>{
+        return client.get("$serverUrl/eventide/events/user/$userID").body()
     }
 
     suspend fun postEvent(event: EventCreateDto){
@@ -66,4 +73,5 @@ class EventApiService (
 
         return response.body()
     }
+
 }

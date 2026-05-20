@@ -63,6 +63,7 @@ import com.ivabagba.eventide_app.data.dto.EventResponseDto
 import com.ivabagba.eventide_app.data.dto.login.LoginResDto
 import com.ivabagba.eventide_app.viewModel.EventMainVm
 import kotlinx.coroutines.delay
+import kotlin.math.log
 import kotlin.time.Duration.Companion.milliseconds
 
 class EventMainScreen(
@@ -88,7 +89,7 @@ class EventMainScreen(
         var showDeleteConfirmation by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
-            viewModel.loadEvents()
+            viewModel.loadEvents(loggedIn.id)
         }
 
         //Cuando se cierra el detalle del evento también borramos los datos de que detalle de evento estábamos viendo
@@ -288,7 +289,8 @@ class EventMainScreen(
                                             showEventDetail = false
                                             showDeleteConfirmation = false
                                             selectEvent = null
-                                        }
+                                        },
+                                        userID = loggedIn.id
                                     )
                                 }
                             },

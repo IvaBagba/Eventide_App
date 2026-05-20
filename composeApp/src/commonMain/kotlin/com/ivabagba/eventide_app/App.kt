@@ -1,4 +1,4 @@
-package com.ivabagba.eventide_app
+ package com.ivabagba.eventide_app
 
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.navigator.Navigator

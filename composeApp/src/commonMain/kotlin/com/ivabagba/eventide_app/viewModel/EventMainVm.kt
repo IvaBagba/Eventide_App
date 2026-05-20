@@ -27,7 +27,7 @@ class EventMainVm (
 
     private val corrutine = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    fun loadEvents() {
+    fun loadEvents(userID: Long) {
 
         //nos permite crear un subproceso que llamara a la api
         corrutine.launch {
@@ -35,9 +35,9 @@ class EventMainVm (
             errorMessage = null
 
             try {
-                events = eventApiService.getEvents()
+                events = eventApiService.getEventsByUser(userID)
             } catch (e: Exception) {
-                errorMessage = e.message ?: "Ha ocurrido un error"
+                errorMessage = e.message ?: "Ha ocurrido un error al cargar eventos"
             } finally {
                 isLoading = false
             }
@@ -53,7 +53,7 @@ class EventMainVm (
     var deleterError by mutableStateOf<String?>(null)
     private set
 
-    fun deleteEvent(id: Long, onSuccess: () -> Unit) {
+    fun deleteEvent(id: Long, onSuccess: () -> Unit,userID: Long) {
         corrutine.launch {
             try {
                 isDeleting = true
@@ -63,7 +63,7 @@ class EventMainVm (
                 eventApiService.deleteEvent(id)
 
                 //Recargar lista post borrado
-                loadEvents()
+                loadEvents(userID)
 
                 onSuccess()
             } catch (e: Exception) {
