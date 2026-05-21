@@ -646,7 +646,7 @@ class EventMainScreen(
             onClick = onClick,
             modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp),
+            .height(185.dp),
             //forma de la tarjeta
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
@@ -660,14 +660,30 @@ class EventMainScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(
-                    text = event.eventName,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = event.eventName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    Spacer(modifier = Modifier.size(8.dp))
+
+                    EventCardStatusChip(
+                        status = event.eventStatus,
+                    )
+                }
 
                 Text(
                     text = event.eventDesc ?: "Sin descripcion",
@@ -676,25 +692,94 @@ class EventMainScreen(
                     maxLines = 2
                 )
 
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = event.eventDate + " - " + event.eventTime.take(5),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+
+                    Text(
+                        text = event.eventLocation,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
+
                 Spacer(modifier = Modifier.weight(1f))
 
-                Text(
-                    text = event.eventDate + " - " + event.eventTime,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    FlowRow(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        event.cursosTags.take(3).forEach {
+                            tag -> EventCardTagChip(tag = tag)
+                        }
 
-                Text(
-                    text = event.eventLocation,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                        if (event.cursosTags.size > 3) {
+                            EventCardTagChip(tag = "+${event.cursosTags.size - 3}")
+                        }
+                    }
 
-                Text(
-                    text = "Usuarios Inscritos: " + event.regUsersID.size,
-                )
+                    Spacer(modifier = Modifier.size(8.dp))
 
+                    Text(
+                        text = "Inscritos: " + event.regUsersID.size,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }
+    @Composable
+    fun EventCardStatusChip(
+        status: String,
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.primaryContainer,
+        ) {
+            Text(
+                text = status,
+                modifier = Modifier.padding(vertical = 6.dp , horizontal = 10.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                maxLines = 1
+            )
+        }
+    }
+    @Composable
+    fun EventCardTagChip(
+        tag: String
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+        ) {
+            Text(
+                text = tag,
+                modifier = Modifier.padding(vertical = 4.dp , horizontal = 8.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                maxLines = 1
+            )
+        }
+    }
+
+
 }
