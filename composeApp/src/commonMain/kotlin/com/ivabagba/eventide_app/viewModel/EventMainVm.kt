@@ -3,6 +3,7 @@ package com.ivabagba.eventide_app.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.PointerId
 import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.data.dto.EventResponseDto
 import kotlinx.coroutines.CoroutineScope
@@ -73,6 +74,55 @@ class EventMainVm (
             }
 
 
+        }
+    }
+
+    //Apuntarse a evento logica
+    //Esta el usuario registrandose ?
+    var isRegistering by mutableStateOf(false)
+    private set
+    //Hubo un error al registrarse ?
+    var registerError by mutableStateOf<String?>(null)
+    private set
+
+    fun regToEvent(eventId: Long, userID: Long, onSuccess: (EventResponseDto) -> Unit) {
+        corrutine.launch {
+            isRegistering = true
+            registerError = null
+
+            try {
+                val registeredEvent = eventApiService.regUserToEvent(eventId, userID)
+                updateEventInfo(registeredEvent)
+                onSuccess(registeredEvent)
+            } catch (e: Exception) {
+                registerError  = "Ha ocurrido un error al apuntarse al evento"
+            } finally {
+                isRegistering = false
+            }
+        }
+    }
+    
+    fun unregToEvent(eventID: Long, userID: Long, onSuccess: (EventResponseDto) -> Unit) {
+        corrutine.launch {
+            isRegistering = true
+            registerError = null
+            
+            try {
+                val registeredEvent = eventApiService.unregUserToEvent(eventID, userID)
+                updateEventInfo(registeredEvent)
+                onSuccess(registeredEvent)
+            } catch (e: Exception) {
+                registerError = "Error al desapuntarse del evento"
+            } finally {
+                isRegistering = false
+            }
+        }
+    }
+
+    //Busca el evento actualizado (nuevo usuario apuntado o desapuntado) y cambia los datos que se visualizan en el evento
+    private fun updateEventInfo(registeredEvent: EventResponseDto) {
+        events = events.map { event ->
+            if (event.id == registeredEvent.id) registeredEvent else event
         }
     }
 }

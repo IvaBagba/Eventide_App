@@ -27,7 +27,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -63,14 +65,12 @@ import com.ivabagba.eventide_app.data.dto.EventResponseDto
 import com.ivabagba.eventide_app.data.dto.login.LoginResDto
 import com.ivabagba.eventide_app.viewModel.EventMainVm
 import kotlinx.coroutines.delay
-import kotlin.math.log
 import kotlin.time.Duration.Companion.milliseconds
 
 class EventMainScreen(
     private val loggedIn: LoginResDto
 ) : Screen {
 
-    @Preview
     @Composable
     override fun Content() {
         val client = remember { CreateHttpClient() }
@@ -161,9 +161,9 @@ class EventMainScreen(
                                 navigator?.pop()
                             }) {
                                 Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
+                                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                                    contentDescription = "Cerrar Sesión",
+                                    modifier = Modifier.size(26.dp),
                                     tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
@@ -246,10 +246,12 @@ class EventMainScreen(
                         EventDetailScreen(
                             isAdmin = isAdmin,
                             event = event,
+                            loggedUserId = loggedIn.id,
                             isDeleting = viewModel.isDeleting,
+                            isRegistering = viewModel.isRegistering,
                             deleteError = viewModel.deleterError,
                             onDismiss = {
-                                if (!viewModel.isDeleting) {
+                                if (!viewModel.isDeleting && !viewModel.isRegistering) {
                                     showEventDetail = false
                                 }
 
@@ -260,6 +262,26 @@ class EventMainScreen(
 
                             onEditClick = {
                                 navigator?.push(EventEditScreen(event))
+                            },
+
+                            onRegisterClick = {
+                                viewModel.regToEvent(
+                                    eventId = event.id,
+                                    userID = loggedIn.id,
+                                    onSuccess = { updatedEvent ->
+                                        selectEvent = updatedEvent
+                                    }
+                                )
+                            },
+
+                            onUnregisterClick = {
+                                viewModel.unregToEvent(
+                                    eventID = event.id,
+                                    userID = loggedIn.id,
+                                    onSuccess = { updatedEvent ->
+                                        selectEvent = updatedEvent
+                                    }
+                                )
                             }
                         )
                     }
@@ -333,11 +355,18 @@ class EventMainScreen(
         onDismiss: () -> Unit,
         onDeleteClick: () -> Unit,
         onEditClick: () -> Unit,
+        onRegisterClick: () -> Unit,
+        onUnregisterClick: () -> Unit,
         isDeleting: Boolean,
         deleteError: String?,
         isAdmin: Boolean,
+        loggedUserId: Long,
+        isRegistering: Boolean,
 
         ) {
+
+        val isUserInEvent = event.regUsersID.contains(loggedIn.id)
+
         Box(modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -392,7 +421,7 @@ class EventMainScreen(
                     )
 
                     Text(
-                        text = "Hora: " + event.eventDate,
+                        text = "Hora: " + event.eventTime,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -407,6 +436,10 @@ class EventMainScreen(
                         text = "Estado: " + event.eventStatus,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+
+                    Text(
+                        text = "Usuarios Inscritos: " + event.regUsersID.size,
                     )
 
                     deleteError?.let {error ->
@@ -450,6 +483,27 @@ class EventMainScreen(
                                 )
                             ) {
                                 Text(text = "Eliminar")
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.size(12.dp))
+
+                            Button(
+                                onClick = {
+                                    if (isUserInEvent) {
+                                        onUnregisterClick()
+                                    } else {
+                                        onRegisterClick()
+                                    }
+                                },
+                                enabled = !isRegistering,
+                            ) {
+                                Text(
+                                    when {
+                                        isRegistering -> "Apuntandose..."
+                                        isUserInEvent -> "Desapuntarse"
+                                        else -> "Inscribirse"
+                                    }
+                                )
                             }
                         }
                     }
@@ -508,6 +562,10 @@ class EventMainScreen(
                     text = event.eventLocation,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Text(
+                    text = "Usuarios Inscritos: " + event.regUsersID.size,
                 )
 
             }

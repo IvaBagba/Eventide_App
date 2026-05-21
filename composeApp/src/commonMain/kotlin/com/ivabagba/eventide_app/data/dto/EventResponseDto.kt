@@ -13,4 +13,5 @@ data class EventResponseDto(
     val eventLocation: String,
     val eventStatus: String,
     val cursosTags: List<String> = emptyList(),
+    val regUsersID: List<Long> = emptyList(),
 )
