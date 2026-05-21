@@ -75,7 +75,7 @@ class EventEditVm(
         }
     }
 
-    fun updateEvent(id:Long){
+    fun updateEvent(id:Long, userID:Long) {
         //Llamada a metodo de validacion de campos
         if (!validateFields()) return
 
@@ -97,7 +97,8 @@ class EventEditVm(
 
                 eventApiService.updateEvent(
                     id = id,
-                    event = eventUpdate
+                    event = eventUpdate,
+                    userID = userID,
                 )
 
                 isSuccess = true

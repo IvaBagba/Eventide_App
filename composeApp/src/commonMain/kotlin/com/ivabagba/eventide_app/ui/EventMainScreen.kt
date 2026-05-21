@@ -9,28 +9,32 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,7 +59,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -106,7 +109,7 @@ class EventMainScreen(
                 if (isAdmin) {
                     FloatingActionButton(
                         onClick = {
-                            navigator?.push(EventCreateScreen())
+                            navigator?.push(EventCreateScreen(loggedIn))
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -261,7 +264,7 @@ class EventMainScreen(
                             },
 
                             onEditClick = {
-                                navigator?.push(EventEditScreen(event))
+                                navigator?.push(EventEditScreen(event,loggedIn))
                             },
 
                             onRegisterClick = {
@@ -352,34 +355,42 @@ class EventMainScreen(
     @Composable
     fun EventDetailScreen(
         event: EventResponseDto,
+
         onDismiss: () -> Unit,
         onDeleteClick: () -> Unit,
         onEditClick: () -> Unit,
-        onRegisterClick: () -> Unit,
-        onUnregisterClick: () -> Unit,
+
         isDeleting: Boolean,
         deleteError: String?,
         isAdmin: Boolean,
+
         loggedUserId: Long,
         isRegistering: Boolean,
+        onRegisterClick: () -> Unit,
+        onUnregisterClick: () -> Unit,
 
         ) {
 
-        val isUserInEvent = event.regUsersID.contains(loggedIn.id)
+        val isUserInEvent = event.regUsersID.contains(loggedUserId)
 
-        Box(modifier = Modifier
+        Box(
+            modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .clickable (
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
-            ) {onDismiss()},
+            ) {
+                if (!isDeleting && !isRegistering) {
+                    onDismiss()
+                }
+              },
             contentAlignment = Alignment.Center
         ){
             Card(
                 modifier = Modifier
-                .fillMaxWidth(0.90f)
-                .fillMaxHeight(0.80f)
+                .fillMaxWidth(0.92f)
+                .fillMaxHeight(0.82f)
                     .pointerInput(Unit) {
                         detectTapGestures {  }
                     },
@@ -396,51 +407,101 @@ class EventMainScreen(
                         .fillMaxSize()
                         .padding(24.dp)
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
 
                 ) {
-                    Text(
-                        text = event.eventName,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top,
+                    ) {
+                        Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                        ) {
+                            Text(
+                                text = event.eventName,
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                )
 
+                            Text(
+                                text = event.eventDesc ?: "Sin descripcion",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                        }
 
-                    Text(
-                        text = event.eventDesc ?: "Sin descripcion",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        Spacer(modifier = Modifier.size(12.dp))
+
+                        StatusChip(event.eventStatus)
+                    }
 
                     HorizontalDivider()
 
                     Text(
-                        text = "Fecha: " + event.eventDate,
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "Datos del evento",
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
 
-                    Text(
-                        text = "Hora: " + event.eventTime,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            DetailInfo(
+                                label = "Fecha",
+                                value = event.eventDate,
+                            )
+
+                            DetailInfo(
+                                label = "Hora",
+                                value = event.eventTime,
+                            )
+
+                            DetailInfo(
+                                label = "Ubicacion",
+                                value = event.eventLocation,
+                            )
+
+                            DetailInfo(
+                                label = "Inscritos",
+                                value = event.regUsersID.size.toString(),
+                            )
+                        }
+                    }
 
                     Text(
-                        text = "Ubicación: " + event.eventLocation,
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "Cursos",
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
 
-                    Text(
-                        text = "Estado: " + event.eventStatus,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    Text(
-                        text = "Usuarios Inscritos: " + event.regUsersID.size,
-                    )
+                    if (event.cursosTags.isEmpty()) {
+                        Text(
+                            text = "Sin Tags asignadas",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    } else {
+                        FlowRow(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            event.cursosTags.forEach {
+                                tag -> TagChip(tag)
+                            }
+                        }
+                    }
 
                     deleteError?.let {error ->
                         Text(
@@ -452,16 +513,19 @@ class EventMainScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    Row (
+                    FlowRow (
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ){
                             OutlinedButton(
                             onClick = onDismiss,
-                            enabled = !isDeleting,
+                            enabled = !isDeleting && !isRegistering,
                         ) {
-                            Text(text = "Cerrar")
+                            Text(
+                                text = "Cerrar",
+                                maxLines = 1
+                            )
                         }
 
                         if (isAdmin) {
@@ -470,19 +534,25 @@ class EventMainScreen(
                                 onClick = onEditClick,
                                 enabled = !isDeleting,
                             ) {
-                                Text(text = "Editar")
+                                Text(
+                                    text = "Editar",
+                                    maxLines = 1)
                             }
 
                             Spacer(modifier = Modifier.size(12.dp))
                             Button(
                                 onClick = onDeleteClick,
                                 enabled = !isDeleting,
+                                modifier = Modifier.fillMaxWidth().heightIn(min =48.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     contentColor = MaterialTheme.colorScheme.onError,
                                     containerColor = MaterialTheme.colorScheme.error
                                 )
                             ) {
-                                Text(text = "Eliminar")
+                                Text(
+                                    text = "Eliminar",
+                                    maxLines = 1
+                                )
                             }
                         } else {
                             Spacer(modifier = Modifier.size(12.dp))
@@ -496,11 +566,12 @@ class EventMainScreen(
                                     }
                                 },
                                 enabled = !isRegistering,
+                                modifier = Modifier.widthIn(min = 130.dp)
                             ) {
                                 Text(
                                     when {
-                                        isRegistering -> "Apuntandose..."
-                                        isUserInEvent -> "Desapuntarse"
+                                        isRegistering -> "Procesando..."
+                                        isUserInEvent -> "Desinscribirse"
                                         else -> "Inscribirse"
                                     }
                                 )
@@ -511,6 +582,61 @@ class EventMainScreen(
             }
         }
     }
+
+    @Composable
+    fun StatusChip(statusTag: String) {
+        Surface(
+            shape = RoundedCornerShape(50),
+            color = MaterialTheme.colorScheme.primaryContainer,
+        ) {
+            Text(
+                text = statusTag,
+                modifier = Modifier.padding(vertical = 6.dp , horizontal = 12.dp),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+        }
+    }
+
+    @Composable
+    fun TagChip(tag: String) {
+        Surface(
+            shape = RoundedCornerShape(50),
+            color = MaterialTheme.colorScheme.secondaryContainer,
+        ) {
+            Text(
+                text = tag,
+                modifier = Modifier.padding(vertical = 4.dp , horizontal = 10.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
+    }
+
+    @Composable
+    fun DetailInfo(
+        label: String,
+        value: String,
+    ) {
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+
 
 
     @Composable

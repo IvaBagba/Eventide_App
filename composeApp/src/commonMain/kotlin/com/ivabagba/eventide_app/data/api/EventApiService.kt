@@ -34,8 +34,8 @@ class EventApiService (
         return client.get("$serverUrl/eventide/events/user/$userID").body()
     }
 
-    suspend fun postEvent(event: EventCreateDto){
-        client.post("$serverUrl/eventide/events") {
+    suspend fun postEvent(event: EventCreateDto, userID: Long){
+        client.post("$serverUrl/eventide/events/admin/$userID") {
             contentType(ContentType.Application.Json)
             setBody(event)
         }
@@ -46,15 +46,16 @@ class EventApiService (
         .body<EventDataFieldsDto>()
     }
 
-    suspend fun deleteEvent(id: Long){
-        client.delete("$serverUrl/eventide/events/$id") {}
+    suspend fun deleteEvent(id: Long, userID: Long){
+        client.delete("$serverUrl/eventide/events/admin/$id/$userID") {}
     }
 
     suspend fun updateEvent(
         id: Long,
-        event: EventCreateDto
+        event: EventCreateDto,
+        userID: Long
     ) : EventResponseDto {
-        return client.put("$serverUrl/eventide/events/$id") {
+        return client.put("$serverUrl/eventide/events/admin/$id/$userID") {
             contentType(ContentType.Application.Json)
             setBody(event)
         }.body()

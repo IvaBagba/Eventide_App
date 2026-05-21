@@ -1,5 +1,6 @@
 package com.ivabagba.eventide_app.viewModel
 
+import androidx.compose.material3.LocalShortNavigationBarOverride
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -44,7 +45,7 @@ class EventCreationVm(
 
     private val corrutine = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    fun createEvent() {
+    fun createEvent(userID: Long) {
         if (!validateFields()) return
 
         corrutine.launch {
@@ -63,7 +64,7 @@ class EventCreationVm(
                     cursosTags = cursosTags
                 )
 
-                eventApiService.postEvent(eventCreate)
+                eventApiService.postEvent(eventCreate, userID)
                 isSuccess = true
 
             } catch (e:Exception) {

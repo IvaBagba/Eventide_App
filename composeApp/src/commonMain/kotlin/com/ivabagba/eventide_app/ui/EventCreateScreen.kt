@@ -16,9 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,18 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.savedstate.savedState
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.Navigator
 import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.api.EventApiService
+import com.ivabagba.eventide_app.data.dto.login.LoginResDto
 import com.ivabagba.eventide_app.viewModel.EventCreationVm
-import com.ivabagba.eventide_app.viewModel.EventMainVm
-import io.ktor.sse.COLON
 
-class EventCreateScreen : Screen{
+class EventCreateScreen(
+    private val loggedIn: LoginResDto) : Screen{
     @Preview
     @Composable
     override fun Content() {
@@ -56,6 +50,7 @@ class EventCreateScreen : Screen{
         val client = remember { CreateHttpClient() }
         val api = remember { EventApiService(client) }
         val viewModel = remember { EventCreationVm(api) }
+
 
         var statusFieldExpanded by remember { mutableStateOf(false) }
         var cursosFieldExpanded by remember { mutableStateOf(false) }
@@ -279,7 +274,7 @@ class EventCreateScreen : Screen{
 
                     Button(
                         onClick = {
-                            viewModel.createEvent()
+                            viewModel.createEvent(loggedIn.id)
                         },
                         enabled = !viewModel.isSaving,
                     ) {

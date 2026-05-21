@@ -36,10 +36,12 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.data.dto.EventResponseDto
+import com.ivabagba.eventide_app.data.dto.login.LoginResDto
 import com.ivabagba.eventide_app.viewModel.EventEditVm
 
 class EventEditScreen(
-    private val event: EventResponseDto
+    private val event: EventResponseDto,
+    private val loggedIn: LoginResDto
 ) : Screen {
 
     @Composable
@@ -283,7 +285,7 @@ class EventEditScreen(
 
                     Button(
                         onClick = {
-                            viewModel.updateEvent(event.id)
+                            viewModel.updateEvent(event.id, loggedIn.id)
                         },
                         enabled = !viewModel.isSaving,
                     ) {

@@ -61,7 +61,7 @@ class EventMainVm (
                 deleterError = null
 
                 //Llamada a la api para borrar el evento
-                eventApiService.deleteEvent(id)
+                eventApiService.deleteEvent(id, userID)
 
                 //Recargar lista post borrado
                 loadEvents(userID)
