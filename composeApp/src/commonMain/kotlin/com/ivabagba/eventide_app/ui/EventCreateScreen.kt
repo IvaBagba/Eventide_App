@@ -12,16 +12,27 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -38,6 +50,10 @@ import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.data.dto.login.LoginResDto
 import com.ivabagba.eventide_app.viewModel.EventCreationVm
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.internal.throwMissingFieldException
+import kotlin.time.Instant
 
 class EventCreateScreen(
     private val loggedIn: LoginResDto) : Screen{
@@ -98,20 +114,14 @@ class EventCreateScreen(
                     minLines = 5,
                 )
 
-                OutlinedTextField(
+                EventDatePicker(
                     value = viewModel.eventDate,
-                    onValueChange = { viewModel.eventDate = it },
-                    label = {Text(" Fecha (yyyy-MM-dd)")},
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    onValueChange = {viewModel.eventDate = it}
                 )
 
-                OutlinedTextField(
+                EventTimePicker(
                     value = viewModel.eventTime,
-                    onValueChange = { viewModel.eventTime = it },
-                    label = {Text(" Hora (HH:MM:SS)")},
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    onValueChange = {viewModel.eventTime = it}
                 )
 
                 OutlinedTextField(
@@ -285,8 +295,6 @@ class EventCreateScreen(
                         }
                     }
                 }
-                
-
             }
         }
     }

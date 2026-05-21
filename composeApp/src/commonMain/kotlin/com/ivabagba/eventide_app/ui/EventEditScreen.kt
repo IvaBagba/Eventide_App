@@ -100,20 +100,14 @@ class EventEditScreen(
                     minLines = 5,
                 )
 
-                OutlinedTextField(
+                EventDatePicker(
                     value = viewModel.eventDate,
-                    onValueChange = { viewModel.eventDate = it },
-                    label = { Text(" Fecha (yyyy-MM-dd)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    onValueChange = {viewModel.eventDate = it}
                 )
 
-                OutlinedTextField(
+                EventTimePicker(
                     value = viewModel.eventTime,
-                    onValueChange = { viewModel.eventTime = it },
-                    label = { Text(" Hora (HH:MM:SS)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    onValueChange = {viewModel.eventTime = it}
                 )
 
                 OutlinedTextField(
