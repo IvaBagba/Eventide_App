@@ -148,11 +148,13 @@ class EventMainScreen(
                                 style = MaterialTheme.typography.bodySmall,
                             )
 
-                            Text(
-                                text = loggedIn.userRole,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
+                            loggedIn.userSurname?.let {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
 
                         }
                         Surface(
@@ -565,7 +567,7 @@ class EventMainScreen(
                                         onRegisterClick()
                                     }
                                 },
-                                enabled = !isRegistering,
+                                enabled = !isRegistering && !isDeleting && event.eventStatus == "LISTA_ABIERTA",
                                 modifier = Modifier.widthIn(min = 130.dp)
                             ) {
                                 Text(
@@ -646,7 +648,7 @@ class EventMainScreen(
             onClick = onClick,
             modifier = Modifier
             .fillMaxWidth()
-            .height(185.dp),
+            .height(220.dp),
             //forma de la tarjeta
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
