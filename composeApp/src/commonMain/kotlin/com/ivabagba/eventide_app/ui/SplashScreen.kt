@@ -7,25 +7,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eventide_app.composeapp.generated.resources.Res
-import eventide_app.composeapp.generated.resources.appIcon
+import eventide_app.composeapp.generated.resources.app_icon
 import eventide_app.composeapp.generated.resources.background_var
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.milliseconds
 
 class SplashScreen : Screen {
@@ -61,7 +58,7 @@ class SplashScreen : Screen {
                     )
 
                     Image(
-                        painter = painterResource(Res.drawable.appIcon),
+                        painter = painterResource(Res.drawable.app_icon),
                         contentDescription = null,
                     )
 

@@ -1,5 +1,9 @@
 FROM gradle:8.13-jdk17 AS build
 
+USER root
+
+RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY . .
