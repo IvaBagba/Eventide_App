@@ -7,7 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +47,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.ivabagba.eventide_app.data.api.CreateHttpClient
 import com.ivabagba.eventide_app.data.api.EventApiService
 import com.ivabagba.eventide_app.viewModel.LoginVm
+import eventide_app.composeapp.generated.resources.Res
+import eventide_app.composeapp.generated.resources.background_var
+import org.jetbrains.compose.resources.painterResource
 
 class LoginScreen : Screen {
 
@@ -66,117 +70,126 @@ class LoginScreen : Screen {
         LaunchedEffect(Unit) {
             loginVisible = true
         }
+        Box(Modifier.fillMaxSize()) {
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(32.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            //Animacion de el elemento login
-            AnimatedVisibility(
-                //Parametros de la animacion
-                visible = loginVisible,
-                enter = fadeIn(
-                    animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing)
-                ) + scaleIn(
-                    initialScale = 0.9f,
-                    animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing)
-                ) + slideInVertically(
-                    initialOffsetY = { it / 4 },
-                )
+            Image(
+                painter = painterResource(Res.drawable.background_var),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                Card(
-                    modifier = Modifier
-                        .widthIn(max = 420.dp)
-                        .fillMaxWidth()
-                        .heightIn(max = 600.dp)
-                        .animateContentSize(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                    ),
-                    elevation = CardDefaults.cardElevation(12.dp)
+                //Animacion de el elemento login
+                AnimatedVisibility(
+                    //Parametros de la animacion
+                    visible = loginVisible,
+                    enter = fadeIn(
+                        animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing)
+                    ) + scaleIn(
+                        initialScale = 0.9f,
+                        animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing)
+                    ) + slideInVertically(
+                        initialOffsetY = { it / 4 },
+                    )
                 ) {
-                    Column(
+                    Card(
                         modifier = Modifier
-                            .padding(28.dp),
-                        verticalArrangement = Arrangement.spacedBy(18.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .widthIn(max = 420.dp)
+                            .fillMaxWidth()
+                            .heightIn(max = 600.dp)
+                            .animateContentSize(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                        ),
+                        elevation = CardDefaults.cardElevation(12.dp)
                     ) {
-                        Text(
-                            text = "Eventide",
-                            style = MaterialTheme.typography.headlineLarge,
-                        )
-                        Text(
-                            text = "Accede a tu cuenta para ver los eventos",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        OutlinedTextField(
-                            value = viewModel.dni,
-                            onValueChange = { viewModel.dni = it },
-                            label = { Text("DNI") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-
-                        )
-
-                        OutlinedTextField(
-                            value = viewModel.userPass,
-                            onValueChange = { viewModel.userPass = it },
-                            label = { Text("Contraseña") },
-                            singleLine = true,
-
-                            //funcion mostrar contraseña
-                            visualTransformation = if (showPassword) {
-                                VisualTransformation.None
-                            } else {
-                                PasswordVisualTransformation()
-                            },
-
-                            trailingIcon = {
-                                IconButton(onClick = { showPassword = !showPassword }) {
-                                    Icon(
-                                        imageVector = if (showPassword)
-                                            Icons.Default.Visibility
-                                        else
-                                            Icons.Default.VisibilityOff,
-                                        contentDescription = "Mostrar contraseña"
-                                    )
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Button(
-                            onClick = {
-                                viewModel.onLogin{ loggedIn ->
-                                    navigator?.push(EventMainScreen(loggedIn))
-                                }
-                            },
-                            enabled = !viewModel.isLoading,
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = RoundedCornerShape(14.dp),
+                                .padding(28.dp),
+                            verticalArrangement = Arrangement.spacedBy(18.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(if (!viewModel.isLoading) "Iniciar Sesión" else "Iniciando Sesión")
-                        }
-
-                        viewModel.errorMessage?.let {
-                            errorMessage ->
                             Text(
-                                text = errorMessage,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = "Eventide",
+                                style = MaterialTheme.typography.headlineLarge,
                             )
-                        }
-                    }
+                            Text(
+                                text = "Accede a tu cuenta para ver los eventos",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            OutlinedTextField(
+                                value = viewModel.dni,
+                                onValueChange = { viewModel.dni = it },
+                                label = { Text("DNI") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
 
+                            )
+
+                            OutlinedTextField(
+                                value = viewModel.userPass,
+                                onValueChange = { viewModel.userPass = it },
+                                label = { Text("Contraseña") },
+                                singleLine = true,
+
+                                //funcion mostrar contraseña
+                                visualTransformation = if (showPassword) {
+                                    VisualTransformation.None
+                                } else {
+                                    PasswordVisualTransformation()
+                                },
+
+                                trailingIcon = {
+                                    IconButton(onClick = { showPassword = !showPassword }) {
+                                        Icon(
+                                            imageVector = if (showPassword)
+                                                Icons.Default.Visibility
+                                            else
+                                                Icons.Default.VisibilityOff,
+                                            contentDescription = "Mostrar contraseña"
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Button(
+                                onClick = {
+                                    viewModel.onLogin{ loggedIn ->
+                                        navigator?.push(EventMainScreen(loggedIn))
+                                    }
+                                },
+                                enabled = !viewModel.isLoading,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(14.dp),
+                            ) {
+                                Text(if (!viewModel.isLoading) "Iniciar Sesión" else "Iniciando Sesión")
+                            }
+
+                            viewModel.errorMessage?.let {
+                                    errorMessage ->
+                                Text(
+                                    text = errorMessage,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+
+                    }
                 }
             }
         }
+
     }
 }
 

@@ -191,7 +191,7 @@ class EventMainScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    //Aquí se muestra el estado del listado de eventos, es decir el estado de carga , error o en su defecto el listado con los eventos
+                    //Aquí se muestra el estado del listado de eventos, es decir el estado de carga, error o en su defecto el listado con los eventos
                     when {
                         viewModel.isLoading -> {
                             Box(
